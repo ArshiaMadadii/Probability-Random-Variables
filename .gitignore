@@ -1,0 +1,5 @@
+# Keep only the editable LaTeX source and the latest generated PDF.
+*
+!.gitignore
+!random_variables_notes.tex
+!random_variables_notes.pdf

@@ -13,13 +13,16 @@
 \usepackage{amsmath,amssymb,amsthm,mathtools,booktabs,array,longtable}
 \usepackage{graphicx,xcolor,hyperref,fancyhdr}
 \usepackage{xepersian} % در TeX Live روی ویندوز: بستهٔ texlive-lang-arabic
+% سازگاری برخی نسخه‌های MiKTeX: وصلهٔ bidi برای محیط‌های جدولی ممکن است
+% این قلاب داخلی array را فراخوانی کند، در حالی که خود array آن را تعریف نکرده است.
+\providecommand{\UseMathForPositioningText}{}
 % اولویت فونت‌ها؛ به‌جای تغییر نام در سراسر متن فقط این بخش را ویرایش کنید.
-\IfFontExistsTF{Vazirmatn}{\settextfont[Scale=1.05]{Vazirmatn}}{%
+\IfFontExistsTF{Vazirmatn}{\settextfont[Scale=1.05,AutoFakeSlant=0.2]{Vazirmatn}}{%
   \IfFontExistsTF{Noto Naskh Arabic}{\settextfont[Scale=1.08]{Noto Naskh Arabic}}{%
     \IfFontExistsTF{Amiri}{\settextfont{Amiri}}{\settextfont{Arial}}}}
 \IfFontExistsTF{TeX Gyre Termes}{\setlatintextfont{TeX Gyre Termes}}{%
   \IfFontExistsTF{Libertinus Serif}{\setlatintextfont{Libertinus Serif}}{\setlatintextfont{Latin Modern Roman}}}
-\IfFontExistsTF{Vazirmatn}{\setdigitfont{Vazirmatn}}{%
+\IfFontExistsTF{Vazirmatn}{\setdigitfont[AutoFakeSlant=0.2]{Vazirmatn}}{%
   \IfFontExistsTF{Noto Naskh Arabic}{\setdigitfont{Noto Naskh Arabic}}{%
     \IfFontExistsTF{Amiri}{\setdigitfont{Amiri}}{\setdigitfont{Arial}}}}
 % در همهٔ فرمول‌ها و پاسخ‌های عددی از رقم‌های لاتین استفاده شود.
@@ -28,6 +31,7 @@
 \hypersetup{colorlinks=true,linkcolor=blue!45!black,urlcolor=blue!45!black}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.45em}
+\setlength{\emergencystretch}{2em}
 \linespread{1.3}
 \pagestyle{fancy}
 \fancyhf{}
@@ -109,7 +113,7 @@ f_A=\frac{n_A}{n}.
 \section{اصول احتمال}
 برای هر رویداد $A$ داریم $\Prob(A)\geq0$ و برای فضای نمونه $\Prob(\Omega)=1$. اگر $A\cap B=\varnothing$،
 \begin{equation}\Prob(A\cup B)=\Prob(A)+\Prob(B).\end{equation}
-در حالت شمارا، برای رویدادهای دوبه‌دو ناسازگار $A_i$، احتمال اجتماع برابر مجموع احتمال‌هاست. همچنین $A\subseteq B$ نتیجه می‌دهد $\Prob(A)\leq\Prob(B)$ و همواره $0\leq\Prob(A)\leq1$.
+در حالت شمارا، رویدادهای $A_i$ را دوبه‌دو ناسازگار فرض می‌کنیم. در این صورت، احتمال اجتماع آن‌ها برابر مجموع احتمال‌هاست. همچنین $A\subseteq B$ نتیجه می‌دهد $\Prob(A)\leq\Prob(B)$ و همواره $0\leq\Prob(A)\leq1$.
 
 % ===== صفحات ۶ و ۷ نسخهٔ دست‌نویس =====
 \section{فضای احتمال}

@@ -1,0 +1,350 @@
+% !TeX program = xelatex
+% !TeX encoding = UTF-8
+% جزوهٔ قابل‌گسترش درس احتمال، متغیرهای تصادفی و فرایندهای تصادفی
+% منبع بازنویسی: ۲۷ صفحهٔ نسخهٔ دست‌نویس استاد، دریافت‌شده در ۲۰۲۶/۱۱/۰۹.
+% ترتیب و نمادهای اصلی تا حد ممکن مطابق جزوه نگه داشته شده‌اند.
+% پیش‌نیاز: توزیع کامل TeX Live یا MiKTeX و بستهٔ xepersian؛ کامپایل با XeLaTeX.
+% در Windows: xelatex -interaction=nonstopmode random_variables_notes.tex
+% برای افزودن جلسه: زیر فصل مناسب یک \section یا \subsection تازه بسازید؛
+% نخست شمارهٔ صفحهٔ منبع را در کامنت بیاورید و سپس متن و فرمول‌ها را وارد کنید.
+% اعداد لاتینِ داخل متن‌های انگلیسی با \lr{...} و محاسبات با محیط ریاضی نوشته شوند.
+\documentclass[12pt,a4paper,oneside]{book}
+\usepackage[margin=27mm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools,booktabs,array,longtable}
+\usepackage{graphicx,xcolor,hyperref,fancyhdr}
+\usepackage{xepersian} % در TeX Live روی ویندوز: بستهٔ texlive-lang-arabic
+% اولویت فونت‌ها؛ به‌جای تغییر نام در سراسر متن فقط این بخش را ویرایش کنید.
+\IfFontExistsTF{Vazirmatn}{\settextfont[Scale=1.05]{Vazirmatn}}{%
+  \IfFontExistsTF{Noto Naskh Arabic}{\settextfont[Scale=1.08]{Noto Naskh Arabic}}{%
+    \IfFontExistsTF{Amiri}{\settextfont{Amiri}}{\settextfont{Arial}}}}
+\IfFontExistsTF{TeX Gyre Termes}{\setlatintextfont{TeX Gyre Termes}}{%
+  \IfFontExistsTF{Libertinus Serif}{\setlatintextfont{Libertinus Serif}}{\setlatintextfont{Latin Modern Roman}}}
+\IfFontExistsTF{Vazirmatn}{\setdigitfont{Vazirmatn}}{%
+  \IfFontExistsTF{Noto Naskh Arabic}{\setdigitfont{Noto Naskh Arabic}}{%
+    \IfFontExistsTF{Amiri}{\setdigitfont{Amiri}}{\setdigitfont{Arial}}}}
+% در همهٔ فرمول‌ها و پاسخ‌های عددی از رقم‌های لاتین استفاده شود.
+% XePersian در نسخه‌های تازه و قدیمی نام این فرمان را متفاوت تعریف کرده است.
+\ifcsname DefaultMathDigits\endcsname\DefaultMathDigits\else\DefaultMathsDigits\fi
+\hypersetup{colorlinks=true,linkcolor=blue!45!black,urlcolor=blue!45!black}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\linespread{1.3}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{جزوهٔ احتمال و متغیرهای تصادفی}
+\fancyhead[R]{\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\newcommand{\Prob}{\operatorname{P}}
+\newcommand{\E}{\operatorname{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\NOTE}[1]{\par\smallskip\textbf{یادداشت بازبینی:} #1\par\smallskip}
+% نکتهٔ ویرایشی: در جزوهٔ اصلی گاهی تابع توزیع با F و گاهی با \bar F نوشته شده؛
+% برای انسجام این نسخه از F_X(x) استفاده می‌کند و معنای هر دو یکی است.
+
+\begin{document}
+\frontmatter
+\begin{titlepage}
+\centering
+\vspace*{34mm}
+{\Huge جزوهٔ احتمال و متغیرهای تصادفی\par}
+\vspace{13mm}
+{\Large بازنویسی نسخهٔ دست‌نویس درس\par}
+\vspace{20mm}
+{\large با حفظ ترتیب مطالب و نمادگذاری جزوهٔ استاد\par}
+\vfill
+{\large منبع مکمل: \lr{A. Papoulis and S. U. Pillai, Probability, Random Variables, and Stochastic Processes}\par}
+\vspace{8mm}
+{نسخهٔ قابل‌تکمیل --- بر پایهٔ ۲۷ صفحهٔ ارسالی\par}
+\end{titlepage}
+\tableofcontents
+\mainmatter
+
+% ===== صفحات ۲ تا ۵ نسخهٔ دست‌نویس: فصل اول =====
+\chapter{احتمال و فضای نمونه}
+\section{تعریف فراوانی نسبی و احتمال}
+فرض کنید آزمایشی را $n$ بار تکرار کنیم و رویداد $A$ در $n_A$ بار از این تکرارها رخ دهد. فراوانی نسبی وقوع آن رویداد برابر است با
+\begin{equation}\label{eq:relative-frequency}
+f_A=\frac{n_A}{n}.
+\end{equation}
+در این‌جا $n_A$ تعداد دفعات وقوع $A$ و $n$ تعداد کل تکرارهای آزمایش است.
+
+\textbf{مثال.} سکه‌ای را چند بار پرتاب می‌کنیم و تعداد دفعات آمدن «شیر» را ثبت می‌کنیم. نسبت تعداد شیرها به تعداد کل پرتاب‌ها، فراوانی نسبی این رویداد است. در تعداد زیاد تکرارها، این نسبت به احتمال وقوع رویداد نزدیک می‌شود.
+\begin{equation}
+\Prob(A)\approx\frac{n_A}{n},\qquad
+\Prob(A)=\lim_{n\to\infty}\frac{n_A}{n}\quad\text{(در تعریف فراوانی نسبی، اگر حد موجود باشد).}
+\end{equation}
+
+\textbf{مشاهده}\footnote{\lr{Observation}؛ ثبت نتیجهٔ یک اجرای آزمایش.}:
+اگر یک آزمایش را $n$ بار انجام دهیم، هر نتیجهٔ ثبت‌شده یک مشاهده است. دانستن فراوانی نسبی در آزمایش‌های بسیار، مبنایی برای پیش‌بینی تعداد تقریبی وقوع رویداد در تکرارهای بعدی فراهم می‌کند:
+\begin{equation}n_A\approx n\Prob(A).\end{equation}
+برای مثال، اگر $\Prob(A)=0.5$ باشد، در $100$ بار تکرار حدود $50$ بار و در $200$ بار تکرار حدود $100$ بار انتظار وقوع $A$ داریم؛ این اعداد قطعی نیستند.
+
+\section{دیدگاه پیشینی و پسینی}
+در دیدگاه پسینی، آزمایش را انجام می‌دهیم، داده‌ها را ثبت می‌کنیم و از فراوانی نسبی برای تخمین احتمال بهره می‌بریم. در دیدگاه پیشینی، قبل از انجام آزمایش و با فرض هم‌احتمال بودن نتایج، احتمال را از نسبت تعداد نتایج مطلوب به تعداد نتایج ممکن محاسبه می‌کنیم.
+\begin{equation}\Prob(A)=\frac{\text{تعداد نتایج مطلوب}}{\text{تعداد کل نتایج ممکن}}\qquad\text{(در حالت هم‌احتمال)}.\end{equation}
+\textbf{مثال.} در پرتاب یک تاس سالم، احتمال آمدن عدد $5$ برابر $1/6$ است. برای رویداد آمدن عدد زوج، $A=\{2,4,6\}$ و $\Prob(A)=3/6=1/2$. در آزمایش واقعی می‌توان این پیش‌بینی را با فراوانی‌های ثبت‌شده مقایسه کرد.
+
+\begin{center}\small
+\begin{tabular}{p{34mm}p{61mm}p{37mm}}\toprule
+مفهوم & روش محاسبه & کاربرد \\ \midrule
+فراوانی نسبی & $f_A=n_A/n$ & دادهٔ مشاهده‌شده \\
+احتمال پیشینی & $\Prob(A)=n_A/n$ با نتایج هم‌احتمال & قبل از آزمایش \\
+پیش‌بینی تکرار & $n_A\approx n\Prob(A)$ & تعداد تقریبی رخداد \\ \bottomrule
+\end{tabular}\end{center}
+
+\section{رویدادها و اعمال مجموعه‌ای}
+\textbf{رویداد حقیقی:} اگر یک تاس را پرتاب کنیم، $S=\{1,2,3,4,5,6\}$ مجموعهٔ نتایج ممکن است. رویداد $A=\{2,4,6\}$ به معنی آمدن عدد زوج است. هر رویداد زیرمجموعه‌ای از فضای نمونه است.
+
+\textbf{اجتماع:} اگر $A=\{2,4,6\}$ و $B=\{1,2\}$ باشند،
+\[A\cup B=\{1,2,4,6\}.\]
+اجتماع شامل همهٔ اعضایی است که در دست‌کم یکی از دو رویداد قرار دارند.
+
+\textbf{اشتراک:} اعضایی که در هر دو رویداد حضور دارند:
+\[A\cap B=\{2\}.\]
+\textbf{رویدادهای ناسازگار}\footnote{\lr{Mutually exclusive events}؛ رویدادهایی که وقوع هم‌زمان ندارند.}:
+اگر $A=\{2,4,6\}$ و $B=\{1,3,5\}$، آنگاه $A\cap B=\varnothing$.
+
+\section{اصول احتمال}
+برای هر رویداد $A$ داریم $\Prob(A)\geq0$ و برای فضای نمونه $\Prob(\Omega)=1$. اگر $A\cap B=\varnothing$،
+\begin{equation}\Prob(A\cup B)=\Prob(A)+\Prob(B).\end{equation}
+در حالت شمارا، برای رویدادهای دوبه‌دو ناسازگار $A_i$، احتمال اجتماع برابر مجموع احتمال‌هاست. همچنین $A\subseteq B$ نتیجه می‌دهد $\Prob(A)\leq\Prob(B)$ و همواره $0\leq\Prob(A)\leq1$.
+
+% ===== صفحات ۶ و ۷ نسخهٔ دست‌نویس =====
+\section{فضای احتمال}
+یک فضای احتمال با سه‌تایی $(\Omega,\mathcal F,\Prob)$ مشخص می‌شود:
+\begin{description}
+\item[$\Omega$:] فضای نمونه، مجموعهٔ همهٔ حالت‌های ممکن آزمایش.
+\item[$\mathcal F$:] خانواده‌ای از زیرمجموعه‌های $\Omega$، یعنی رویدادهایی که برایشان احتمال تعریف می‌شود. این خانواده در برابر متمم و اجتماع شمارا بسته است؛ برای فضای نمونهٔ متناهی می‌توان همهٔ زیرمجموعه‌ها را در نظر گرفت.
+\item[$\Prob$:] تابعی از $\mathcal F$ به بازهٔ $[0,1]$ که به رویدادها احتمال اختصاص می‌دهد.
+\end{description}
+برای مثال، برای پرتاب مکرر سکه، فضای نمونهٔ رشته‌های ممکن نتایج و خانوادهٔ رویدادهای متناظر را در نظر می‌گیریم.
+
+\section{احتمال شرطی و قاعدهٔ بیز}
+احتمال وقوع $A$ به شرط آن‌که $M$ رخ داده باشد، برای $\Prob(M)>0$ به صورت زیر تعریف می‌شود:
+\begin{equation}\label{eq:conditional}
+\Prob(A\mid M)=\frac{\Prob(A\cap M)}{\Prob(M)}.
+\end{equation}
+برای $A=\Omega$، این مقدار $1$ است. با استفاده از تقارن $A\cap M=M\cap A$:
+\begin{equation}\label{eq:bayes}
+\Prob(A\mid M)=\frac{\Prob(M\mid A)\Prob(A)}{\Prob(M)}.
+\end{equation}
+
+% ===== صفحات ۸ تا ۱۱ نسخهٔ دست‌نویس =====
+\section{مثال‌های بیز و احتمال کل}
+\textbf{مثال ارسال بیت.} احتمال ارسال بیت صفر $0.6$ و ارسال بیت یک $0.4$ است. احتمال دریافت اشتباه به‌ترتیب $0.1$ و $0.2$ است. اگر $A$ «ارسال صفر» و $B$ «دریافت صفر» باشد:
+\begin{align*}
+\Prob(B\mid A)&=0.9,&\Prob(B\mid\bar A)&=0.2,\\
+\Prob(B)&=0.9(0.6)+0.2(0.4)=0.62,\\
+\Prob(A\mid B)&=\frac{0.9(0.6)}{0.62}\approx0.8710.
+\end{align*}
+
+\textbf{مثال غربالگری.} احتمال وجود یک ویژگی در جمعیت $0.3$، احتمال تشخیص مثبت در حضور آن $0.95$ و احتمال مثبت در نبود آن $0.1$ است. با $A=$ وجود ویژگی و $B=$ پاسخ مثبت:
+\[\Prob(B)=0.95(0.3)+0.1(0.7)=0.355,\qquad
+\Prob(A\mid B)=\frac{0.95(0.3)}{0.355}\approx0.8028.\]
+\NOTE{در صفحهٔ ۹ دست‌نویس، نتیجهٔ این کسر $0.871$ نوشته شده است؛ با اعداد همان مثال، مقدار حسابی آن $0.8028$ است.}
+
+\textbf{مثال ایمیل.} احتمال اسپم بودن $0.7$، احتمال گم‌شدن ایمیل سالم $0.02$ و احتمال گم‌شدن ایمیل اسپم $0.08$ است. اگر $A=$ اسپم و $B=$ گم‌شدن:
+\[\Prob(B)=0.08(0.7)+0.02(0.3)=0.062,\qquad
+\Prob(A\mid B)=\frac{0.08(0.7)}{0.062}\approx0.9032.\]
+\NOTE{در صفحه‌های ۹ و ۱۰ دست‌نویس، حاصل میانی و نهایی این مثال با هم سازگار نیستند؛ این‌جا حاصل محاسبه با احتمال‌های نوشته‌شده در صورت مسئله آمده است.}
+
+\textbf{مثال دو خطا.} $\Prob(E_1)=0.001$، $\Prob(E_2\mid E_1)=0.1$ و $\Prob(E_2)=0.001$. از احتمال کل:
+\[0.001=0.1(0.001)+\Prob(E_2\mid\bar E_1)(0.999),\qquad
+\Prob(E_2\mid\bar E_1)=\frac{0.0009}{0.999}\approx0.0009009.\]
+
+\textbf{مثال سه خط.} سه خط $A,B,C$ با احتمال‌های $0.5,0.3,0.2$ انتخاب می‌شوند. احتمال خرابی به‌ترتیب $0.9,0.8,0.7$ است. با $D=$ خرابی:
+\[\Prob(D)=0.9(0.5)+0.8(0.3)+0.7(0.2)=0.83,\qquad
+\Prob(B\mid D)=\frac{0.8(0.3)}{0.83}\approx0.2892.\]
+
+\textbf{قاعدهٔ احتمال کل.} اگر $A_1,\ldots,A_n$ افرازی از $\Omega$ باشند، یعنی ناسازگار باشند و اجتماعشان $\Omega$ باشد، آنگاه:
+\begin{equation}\label{eq:total}
+\Prob(B)=\sum_{i=1}^{n}\Prob(B\mid A_i)\Prob(A_i).
+\end{equation}
+\begin{center}\small\begin{tabular}{p{35mm}p{96mm}}\toprule
+قاعده & فرمول \\ \midrule
+شرطی & $\Prob(A\mid B)=\Prob(A\cap B)/\Prob(B)$ \\
+بیز & $\Prob(A_i\mid B)=\Prob(B\mid A_i)\Prob(A_i)/\Prob(B)$ \\
+احتمال کل & $\Prob(B)=\sum_i\Prob(B\mid A_i)\Prob(A_i)$ \\ \bottomrule
+\end{tabular}\end{center}
+
+% ===== صفحات ۱۱ تا ۱۵ نسخهٔ دست‌نویس =====
+\chapter{متغیر تصادفی و تابع توزیع تجمعی}
+\section{متغیر تصادفی}
+متغیر تصادفی تابعی است که به هر نتیجهٔ آزمایش، عددی حقیقی نسبت می‌دهد:
+\begin{equation}X:\Omega\longrightarrow\R,\qquad \omega_i\longmapsto X(\omega_i)=x_i.\end{equation}
+ممکن است چند نتیجهٔ متفاوت به یک مقدار یکسان نگاشته شوند. برای آن‌که عبارت‌های احتمالی مربوط به $X$ معنا داشته باشند، مجموعهٔ $\{\omega:X(\omega)\leq x\}$ باید رویداد باشد.
+
+\section{تعریف تابع توزیع تجمعی}
+تابع توزیع تجمعی\footnote{\lr{CDF = Cumulative Distribution Function}؛ «تابع توزیع تجمعی». در بعضی صفحه‌های نسخهٔ دست‌نویس نماد $\bar F_X$ نیز برای همین تابع به‌کار رفته است.} متغیر تصادفی $X$ به صورت
+\begin{equation}\label{eq:cdf}
+F_X(x)=\Prob(X\leq x)=\Prob\{\omega\in\Omega:X(\omega)\leq x\}
+\end{equation}
+تعریف می‌شود. $X$ نام متغیر تصادفی است، در حالی که $x$ مقدار حقیقی‌ای است که آن را در آن ارزیابی می‌کنیم.
+
+\section{خواص تابع توزیع تجمعی}
+\begin{enumerate}
+\item تابع $F_X(x)$ غیرکاهشی است: $x_1<x_2\Rightarrow F_X(x_1)\leq F_X(x_2)$.
+\item $0\leq F_X(x)\leq1$.
+\item $\lim_{x\to-\infty}F_X(x)=0$ و $\lim_{x\to+\infty}F_X(x)=1$.
+\item تابع توزیع از راست پیوسته است.
+\end{enumerate}
+برای $x_1<x_2$:
+\begin{equation}\label{eq:cdf-interval}
+\Prob(x_1<X\leq x_2)=F_X(x_2)-F_X(x_1).
+\end{equation}
+اگر احتمال نقطه‌ای وجود داشته باشد، برای بازه با دو سرِ بسته داریم:
+\begin{equation}
+\Prob(x_1\leq X\leq x_2)=F_X(x_2)-F_X(x_1)+\Prob(X=x_1).
+\end{equation}
+در توزیع پیوسته با احتمال نقطه‌ای صفر، دو عبارت از نظر مقدار یکسان‌اند؛ در توزیع گسسته باید به باز یا بسته بودن کران‌ها توجه کرد.
+
+\section{مثال زمان رسیدن اتوبوس}
+فرض می‌کنیم زمان انتظار $X$ در بازهٔ $[0,10]$ به صورت یکنواخت توزیع شده است. تابع توزیع تجمعی:
+\begin{equation}\label{eq:bus}
+F_X(x)=\begin{cases}0,&x<0,\\x/10,&0\leq x\leq10,\\1,&x>10.\end{cases}
+\end{equation}
+بنابراین احتمال رسیدن اتوبوس تا دقیقهٔ $5$ برابر $F_X(5)=0.5$ است، و احتمال رسیدن آن بین دقیقهٔ $2$ و $7$ برابر $F_X(7)-F_X(2)=0.5$.
+
+\begin{center}\small\begin{tabular}{p{48mm}p{84mm}}\toprule
+رویداد & محاسبه با تابع توزیع \\ \midrule
+$X\leq x$ & $F_X(x)$ \\
+$x_1<X\leq x_2$ & $F_X(x_2)-F_X(x_1)$ \\
+$x_1\leq X\leq x_2$ & $F_X(x_2)-F_X(x_1)+\Prob(X=x_1)$ \\ \bottomrule
+\end{tabular}\end{center}
+
+% ===== صفحات ۱۶ تا ۲۲ نسخهٔ دست‌نویس =====
+\chapter{تابع چگالی و توزیع‌های مهم}
+\section{تابع چگالی احتمال}
+تابع چگالی احتمال\footnote{\lr{PDF = Probability Density Function}؛ «تابع چگالی احتمال». مقدار چگالی در یک نقطه به‌تنهایی احتمال آن نقطه نیست.} با نماد $f_X(x)$، در نقاط مشتق‌پذیری تابع توزیع چنین است:
+\begin{equation}\label{eq:pdf}
+f_X(x)=\frac{d}{dx}F_X(x)\geq0,
+\qquad F_X(x)=\int_{-\infty}^{x} f_X(t)\,dt.
+\end{equation}
+در این بخش فرض می‌کنیم توزیع کاملاً پیوسته باشد. در این صورت
+\begin{equation}
+\int_{-\infty}^{\infty}f_X(x)\,dx=1,
+\qquad \Prob(a<X\leq b)=\int_a^b f_X(x)\,dx.
+\end{equation}
+برای بازهٔ کوچک با طول $\delta$، $\Prob(x<X\leq x+\delta)\approx f_X(x)\delta$؛ یعنی احتمال تقریباً برابر مساحت نوار زیر نمودار چگالی است. در جزوه برای توضیح مفهوم چگالی، جرم میله و تقسیم آن به قطعات کوچک نیز به‌عنوان تشبیه به کار رفته است: جرم کل با جمع/انتگرال چگالی روی طول میله به دست می‌آید.
+
+\section{تابع جرم احتمال برای متغیر گسسته}
+تابع جرم احتمال\footnote{\lr{PMF = Probability Mass Function}؛ «تابع جرم احتمال» برای متغیر تصادفی گسسته.} احتمال مقادیر جداگانهٔ $X$ را بیان می‌کند:
+\[p_X(x_i)=\Prob(X=x_i),\qquad \sum_i p_X(x_i)=1.\]
+در حالت متناهیِ هم‌احتمال با $N$ مقدار، احتمال هر مقدار $1/N$ است. تابع جرم را نباید با چگالیِ یک توزیع پیوسته یکی دانست.
+
+\subsection{توزیع برنولی}
+متغیر برنولی تنها دو مقدار $0$ و $1$ می‌گیرد. با $\Prob(X=1)=p$ و $\Prob(X=0)=1-p$:
+\begin{equation}\Prob(X=x)=p^x(1-p)^{1-x},\qquad x\in\{0,1\}.\end{equation}
+مثال جزوه، ارسال درست یا نادرست بیت است.
+
+\subsection{توزیع دوجمله‌ای}
+اگر $X$ تعداد موفقیت‌ها در $n$ آزمایش مستقل برنولی با احتمال موفقیت ثابت $p$ باشد،
+\begin{equation}\Prob(X=k)=\binom nk p^k(1-p)^{n-k},\qquad k=0,1,\ldots,n.\end{equation}
+
+\subsection{توزیع پواسون}
+این توزیع برای شمارش رخدادها در یک بازه، مانند تعداد تماس‌ها یا خرابی‌ها، به‌کار می‌رود. اگر نرخ رخداد $\lambda$ در واحد بازه و طول بازه $t$ باشد:
+\begin{equation}\Prob(X=k)=\frac{e^{-\lambda t}(\lambda t)^k}{k!},\qquad k=0,1,2,\ldots.\end{equation}
+\NOTE{در صفحهٔ ۲۰ دست‌نویس صورت کسر به شکل $e^{-\lambda}\lambda^k$ دیده می‌شود؛ فرمول عمومی بالا بازهٔ $t$ را نیز روشن می‌کند.}
+
+\subsection{توزیع هندسی}
+اگر $X$ شمارهٔ نخستین آزمایشی باشد که در آن موفقیت با احتمال $p$ رخ می‌دهد:
+\begin{equation}\Prob(X=n)=(1-p)^{n-1}p,\qquad n=1,2,\ldots.\end{equation}
+
+\section{توزیع یکنواخت پیوسته}
+برای $X\sim U(a,b)$ با $a<b$:
+\begin{equation}
+f_X(x)=\begin{cases}\dfrac1{b-a},&a\leq x\leq b,\\0,&\text{در غیر این صورت},\end{cases}
+\qquad
+F_X(x)=\begin{cases}0,&x<a,\\\dfrac{x-a}{b-a},&a\leq x\leq b,\\1,&x>b.\end{cases}
+\end{equation}
+چگالی داخل بازه ثابت است و تابع توزیع در همان بازه به صورت خطی افزایش می‌یابد.
+
+\section{توزیع نرمال}
+تابع چگالی نرمال با میانگین $\mu$ و انحراف معیار $\sigma>0$:
+\begin{equation}\label{eq:normal}
+X\sim N(\mu,\sigma^2),\qquad
+f_X(x)=\frac1{\sigma\sqrt{2\pi}}\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right).
+\end{equation}
+نمودار آن حول $\mu$ متقارن است؛ $\sigma$ پراکندگی را تعیین می‌کند. در جزوه، جمع تعدادی متغیر تصادفی با شکل تقریبی نرمال مطرح شده است؛ برای به‌کارگیری این تقریب، شرایط قضیهٔ حد مرکزی باید بررسی شود.
+
+\section{نرمال استاندارد و استانداردسازی}
+برای $Z\sim N(0,1)$:
+\begin{equation}\phi(z)=\frac1{\sqrt{2\pi}}e^{-z^2/2},\qquad
+\Phi(z)=\Prob(Z\leq z)=\int_{-\infty}^{z}\phi(t)\,dt.\end{equation}
+با تبدیل $Z=(X-\mu)/\sigma$ برای $X\sim N(\mu,\sigma^2)$:
+\begin{equation}
+\Prob(X<a)=\Phi\!\left(\frac{a-\mu}{\sigma}\right),\qquad
+\Prob(X>a)=1-\Phi\!\left(\frac{a-\mu}{\sigma}\right).
+\end{equation}
+\NOTE{نماد تابع توزیع استاندارد در دست‌نویس شبیه $\varphi$ است؛ این‌جا برای جداکردن چگالی و تابع توزیع به‌ترتیب از $\phi$ و $\Phi$ استفاده شده است.}
+
+\begin{center}\small\begin{tabular}{p{34mm}p{83mm}p{21mm}}\toprule
+توزیع & فرمول اصلی & نوع \\ \midrule
+برنولی & $p^x(1-p)^{1-x}$، $x\in\{0,1\}$ & گسسته \\
+دوجمله‌ای & $\binom nk p^k(1-p)^{n-k}$ & گسسته \\
+پواسون & $e^{-\lambda t}(\lambda t)^k/k!$ & گسسته \\
+هندسی & $(1-p)^{n-1}p$ & گسسته \\
+یکنواخت & $f_X(x)=1/(b-a)$ روی $[a,b]$ & پیوسته \\
+نرمال & رابطهٔ \eqref{eq:normal} & پیوسته \\ \bottomrule
+\end{tabular}\end{center}
+
+% ===== صفحات ۲۳ تا ۲۶ نسخهٔ دست‌نویس =====
+\chapter{امید ریاضی، گشتاورها و واریانس}
+\section{امید ریاضی}
+امید ریاضی\footnote{\lr{Expected value / Expectation}؛ میانگین وزن‌دار مقادیر متغیر تصادفی.} مقدار میانگین متغیر تصادفی در تکرارهای فراوان را توصیف می‌کند. برای متغیر گسسته و پیوسته، به‌ترتیب:
+\begin{equation}\label{eq:expectation}
+\E[X]=\sum_i x_i\Prob(X=x_i),
+\qquad
+\E[X]=\int_{-\infty}^{\infty}x f_X(x)\,dx,
+\end{equation}
+هرگاه مجموع یا انتگرال مربوط همگرا باشد.
+
+\textbf{مثال سکه.} برای $\Prob(X=0)=\Prob(X=1)=0.5$:
+\[\E[X]=0(0.5)+1(0.5)=0.5.\]
+\textbf{مثال یکنواخت.} برای $X\sim U(0,10)$:
+\[\E[X]=\int_0^{10}x\frac1{10}\,dx=\left.\frac{x^2}{20}\right|_0^{10}=5.\]
+در نرمال $N(\mu,\sigma^2)$، امید برابر $\mu$ است.
+
+\section{گشتاورها و واریانس}
+گشتاور مرتبهٔ $r$ متغیر تصادفی، در صورت وجود، عبارت است از
+\begin{equation}\E[X^r]=\int_{-\infty}^{\infty}x^r f_X(x)\,dx\end{equation}
+برای متغیر پیوسته؛ در حالت گسسته، انتگرال به مجموع وزن‌دار تبدیل می‌شود. گشتاور دوم حول میانگین یا واریانس، میزان پراکندگی را نشان می‌دهد:
+\begin{equation}\label{eq:variance}
+\sigma^2=\Var(X)=\E[(X-\E[X])^2]
+=\E[X^2]-\E[X]^2.
+\end{equation}
+در توزیع پیوسته می‌توان واریانس را به صورت $\int_{-\infty}^{\infty}(x-\E[X])^2f_X(x)\,dx$ محاسبه کرد.
+
+\begin{center}\small\begin{tabular}{p{44mm}p{85mm}}\toprule
+کمیت & فرمول \\ \midrule
+امید گسسته & $\sum_i x_i\Prob(X=x_i)$ \\
+امید پیوسته & $\int_{-\infty}^{\infty}xf_X(x)\,dx$ \\
+گشتاور دوم & $\E[X^2]$ \\
+واریانس & $\E[X^2]-\E[X]^2$ \\
+استانداردسازی & $Z=(X-\mu)/\sigma$ \\ \bottomrule
+\end{tabular}\end{center}
+
+% ===== صفحهٔ ۲۷ نسخهٔ دست‌نویس؛ فصلِ ادامه‌دار =====
+\chapter{توزیع نمایی و ادامهٔ درس}
+\section{توزیع نمایی}
+برای نرخ $\lambda>0$، تابع چگالی و تابع توزیع زمان انتظار نمایی:
+\begin{equation}
+f_X(x)=\begin{cases}\lambda e^{-\lambda x},&x\geq0,\\0,&x<0,\end{cases}
+\qquad
+F_X(x)=\begin{cases}1-e^{-\lambda x},&x\geq0,\\0,&x<0.\end{cases}
+\end{equation}
+در نتیجه برای $x\geq0$، $\Prob(X>x)=e^{-\lambda x}$. این توزیع برای مدل‌کردن زمان انتظار تا وقوع یک رویداد به‌کار می‌رود.
+
+% ===== محل ادامهٔ جلسات آینده =====
+% \section{عنوان جلسهٔ بعد}
+% % منبع: صفحهٔ ... نسخهٔ تازهٔ دست‌نویس.
+% متن، مثال‌ها، و توضیح اصلاح‌ها را این‌جا وارد کنید.
+
+\backmatter
+\chapter*{یادداشت نسخه}
+\addcontentsline{toc}{chapter}{یادداشت نسخه}
+این نسخه بر اساس تمام صفحه‌های محتوایی فایل ارسالی تنظیم شده است. جلدِ صفحهٔ نخست متن درسی ندارد. شکل‌های دست‌نویسِ نمودارها به توصیف و رابطهٔ متناظر تبدیل شده‌اند؛ برای درج نمودار برداری در نسخه‌های آینده می‌توان از فایل‌های جداگانه در پوشهٔ \lr{figures} و دستور \lr{\textbackslash includegraphics} استفاده کرد. مواردی که نتیجهٔ عددی دست‌نویس با داده‌های همان مثال همخوانی نداشته، با «یادداشت بازبینی» مشخص شده است.
+
+\end{document}
